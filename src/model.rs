@@ -3,6 +3,7 @@ use crate::{Metadata, Stream};
 use log::debug;
 use std::ffi::CStr;
 use std::sync::Arc;
+use std::path::PathBuf;
 
 /// A trained Coqui STT model.
 pub struct Model(pub(crate) *mut coqui_stt_sys::ModelState);
@@ -25,12 +26,14 @@ impl Model {
     /// # Errors
     /// Returns an error if the model path is invalid, or for other reasons.
     #[inline]
-    pub fn new(model_path: impl Into<String>) -> crate::Result<Self> {
+    pub fn new(model_path: impl Into<PathBuf>) -> crate::Result<Self> {
         Self::_new(model_path.into())
     }
 
-    fn _new(model_path: String) -> crate::Result<Self> {
-        let mut model_path = model_path.into_bytes();
+    fn _new(model_path: PathBuf) -> crate::Result<Self> {
+        use std::os::unix::ffi::OsStringExt;
+        
+        let mut model_path = model_path.into_os_string().into_vec();
         model_path.reserve_exact(1);
         model_path.push(b'\0');
         let model_path = CStr::from_bytes_with_nul(model_path.as_ref())?;

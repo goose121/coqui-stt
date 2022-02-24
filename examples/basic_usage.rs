@@ -38,10 +38,9 @@ fn main() {
         }
     }
 
-    let mut m = Model::new(model_name.to_str().expect("invalid utf-8 found in path")).unwrap();
+    let mut m = Model::new(model_name).unwrap();
     // enable external scorer if found in the model folder
     if let Some(scorer) = scorer_name {
-        let scorer = scorer.to_str().expect("invalid utf-8 found in path");
         println!("Using external scorer `{}`", scorer);
         m.enable_external_scorer(scorer).unwrap();
     }
